@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace ContonsoUniversity.Models
+{
+    public class Student
+    {
+        public Int64 StudenID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public DateTime EnrollmentDate { get; set; }
+
+        public virtual ICollection<Enrollment> Enrollments { get; set; }
+    }
+}
