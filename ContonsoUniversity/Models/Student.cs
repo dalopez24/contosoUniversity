@@ -7,7 +7,7 @@ namespace ContonsoUniversity.Models
 {
     public class Student
     {
-        public Int64 StudenID { get; set; }
+        public int StudentID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
