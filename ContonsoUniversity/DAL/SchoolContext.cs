@@ -10,7 +10,10 @@ namespace ContonsoUniversity.DAL
 {
     public class SchoolContext : DbContext
     {
-        public SchoolContext() : base("SchoolContext") { }
+        public SchoolContext() : base("SchoolContext")
+        {
+            Database.SetInitializer<SchoolContext>(new SchoolInitializer());
+        }
 
 
         public DbSet<Student> Students { get; set; }

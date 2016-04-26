@@ -33,7 +33,28 @@
         <dd>
             @Html.DisplayFor(model => model.EnrollmentDate)
         </dd>
-
+        <dt>
+            @Html.DisplayNameFor(model => model.Enrollments)
+        </dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Course Title</th>
+                    <th>Grade</th>
+                    @foreach(var item in Model.Enrollments)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(mt => item.Course.Title )
+                            </td>
+                            <td>
+                                @Html.DisplayFor(mt => item.Grade)
+                            </td>
+                        </tr>
+                    }
+                </tr>
+            </table>
+        </dd>
     </dl>
 </div>
 <p>

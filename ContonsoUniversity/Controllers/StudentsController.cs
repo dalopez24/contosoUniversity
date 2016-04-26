@@ -22,7 +22,7 @@ namespace ContonsoUniversity.Controllers
         }
 
         // GET: Students/Details/5
-        public ActionResult Details(long? id)
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
