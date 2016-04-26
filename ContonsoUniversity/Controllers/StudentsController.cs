@@ -4,10 +4,13 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using PagedList;
 using System.Web;
 using System.Web.Mvc;
 using ContonsoUniversity.DAL;
 using ContonsoUniversity.Models;
+using System.Data.Entity.Infrastructure;
+
 
 namespace ContonsoUniversity.Controllers
 {
@@ -15,13 +18,51 @@ namespace ContonsoUniversity.Controllers
     {
         private SchoolContext db = new SchoolContext();
 
-        // GET: Students
-        public ActionResult Index()
+      
+        public ActionResult Index(string sortOrder,string currentFilter, string searchString, int? page)
         {
-            return View(db.Students.ToList());
+
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DateSrotParm = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if(searchString != null)
+            {
+                page = 1;
+            }else
+            {
+                searchString = currentFilter;
+            }
+            ViewBag.currentFilter = searchString;
+            ViewBag.currentSort = sortOrder;
+            var students = from s in db.Students select s;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                students = students.Where(s => s.LastName.ToUpper().Contains(searchString.ToUpper()) || s.FirstName.ToUpper().Contains(searchString.ToUpper()));   
+            }
+
+            switch (sortOrder) {
+
+                case "name_desc":
+                    students = students.OrderByDescending(s => s.LastName); break;
+
+                case "Date":
+                    students = students.OrderBy(s => s.EnrollmentDate); break;
+
+                case "date_desc":
+                    students = students.OrderByDescending(s => s.EnrollmentDate);break;
+
+                default:
+                    students = students.OrderBy(s => s.LastName);break;
+            }
+
+
+            int pageSize = 3;
+            int pagenumber = (page ?? 1);
+            return View(students.ToPagedList(pagenumber, pageSize));
         }
 
-        // GET: Students/Details/5
+      
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -36,30 +77,37 @@ namespace ContonsoUniversity.Controllers
             return View(student);
         }
 
-        // GET: Students/Create
+       
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Students/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "StudentID,FirstName,LastName,EnrollmentDate")] Student student)
+        public ActionResult Create([Bind(Include = "FirstName,LastName,EnrollmentDate")] Student student)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Students.Add(student);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Students.Add(student);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }else
+                {
+                   
+                }
+            }catch(RetryLimitExceededException e)
+            {
+                Console.WriteLine(e);
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persist see you system administrator.");
             }
-
             return View(student);
         }
 
-        // GET: Students/Edit/5
+     
         public ActionResult Edit(long? id)
         {
             if (id == null)
@@ -90,7 +138,7 @@ namespace ContonsoUniversity.Controllers
             return View(student);
         }
 
-        // GET: Students/Delete/5
+      
         public ActionResult Delete(long? id)
         {
             if (id == null)
@@ -105,7 +153,7 @@ namespace ContonsoUniversity.Controllers
             return View(student);
         }
 
-        // POST: Students/Delete/5
+      
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)

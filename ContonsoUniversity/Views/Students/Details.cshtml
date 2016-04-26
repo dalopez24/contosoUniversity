@@ -41,18 +41,18 @@
                 <tr>
                     <th>Course Title</th>
                     <th>Grade</th>
-                    @foreach(var item in Model.Enrollments)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(mt => item.Course.Title )
-                            </td>
-                            <td>
-                                @Html.DisplayFor(mt => item.Grade)
-                            </td>
-                        </tr>
-                    }
                 </tr>
+                @foreach (var item in Model.Enrollments)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Course.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Grade)
+                        </td>
+                    </tr>
+                }
             </table>
         </dd>
     </dl>
